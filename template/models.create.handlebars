@@ -1,0 +1,201 @@
+import {hashHistory} from 'dva/router';
+import {parse, stringify} from 'qs'
+
+// 处理异步请求
+import {
+  query,
+  add,
+  edit,
+  delete{{modelUpperName}}
+} from '../services/{{namespace}}';
+
+import pathToRegexp from 'path-to-regexp'
+
+import {
+  message as Message,
+  Modal
+} from 'antd'
+
+const PAGE_LENGTH = 10
+const PAGE_LENGTH_Max = 10000
+
+export default {
+  namespace: '{{namespace}}',
+  state: {
+    list: [],
+    total: 0,
+    currentPage: 1,
+    loading: false, // 控制加载状态
+    editData: {},
+    data: []
+  },
+  subscriptions: {
+    setup({dispatch, history}) {
+      history.listen(({pathname, query}) => {
+        if (pathToRegexp(`/y/{{namespace}}/list`).test(pathname)) {
+          // 分页页码更新
+          dispatch({
+            type: 'updateState',
+            payload: {
+              currentPage: 1
+            }
+          })
+          dispatch({
+            type: 'query',
+            payload: {
+              pageSize: PAGE_LENGTH,
+              pageNumber: 1
+            }
+          })
+        }
+      })
+    },
+  },
+
+  effects: {
+    *query({payload}, {call, put}) {
+      yield put({
+        type: 'querySuccess',
+        payload: {
+          loading: true
+        }
+      })
+      const {data} = yield call(query, parse(payload));
+      if (data) {
+        console.log('data-----', data);
+        yield put({
+          type: 'querySuccess',
+          payload: {
+            status: data.status,
+            message: data.message,
+            list: data.data,
+            loading: false,
+            pageParam: payload,
+            total: data.recordsTotal
+          }
+        })
+      } else {
+        yield put({
+          type: 'querySuccess',
+          payload: {
+            list: [],
+            loading: false,
+            hasNextPage: false
+          }
+        })
+      }
+    },
+    *add({payload}, {call, put}) {
+      const {data} = yield call(add, parse(payload));
+      if (data) {
+        yield put({
+          type: 'addSuccess',
+          payload: {
+            data: data
+          }
+        })
+      }
+    },
+    *edit({payload}, {call, put}) {
+      const {data} = yield call(edit, parse(payload));
+      if (data) {
+        yield put({
+          type: 'editSuccess',
+          payload: {
+            data: data
+          }
+        })
+      }
+    },
+    *delete{{modelUpperName}}({payload}, {call, put}) {
+      const {data} = yield call(delete{{modelUpperName}}, parse(payload));
+      if (data) {
+        yield put({
+          type: 'deleteSuccess',
+          payload: {
+            data: data
+          }
+        })
+      }
+    }
+  },
+  reducers: {
+    addSuccess(state, action) {
+      let {
+        data: {
+          status,
+          message
+        }
+      } = action.payload
+      let path = "/y/{{namespace}}/list"
+      if (1 == status) {
+        console.log(path)
+        //退出页面
+        setTimeout(() => {
+          hashHistory.push(path)
+        }, 70)
+        Message.success(message)
+      } else {
+        Message.error(message)
+      }
+      return {...state};
+    },
+    editSuccess(state, action) {
+      let {
+        data: {
+          status,
+          message
+        }
+      } = action.payload
+      let path = "/y/{{namespace}}/list"
+      if (1 == status) {
+        console.log(path)
+        //退出页面
+        setTimeout(() => {
+          hashHistory.push(path)
+        }, 70)
+        Message.success(message)
+      } else {
+        Message.error(message)
+      }
+      return {...state};
+    },
+    deleteSuccess(state, action) {
+      let {
+        data: {
+          status,
+          message
+        }
+      } = action.payload
+      if (1 == status) {
+        // 重新请求数据，rights
+        setTimeout(() => {
+          hashHistory.push(`/y/{{namespace}}/list`)
+        }, 0)
+        Message.success(message)
+      } else {
+        Message.error(message)
+      }
+      return {...state};
+    },
+    querySuccess(state, action) {
+      console.log("querySuccess", action.payload)
+      let {
+        status,
+        message
+      } = action.payload
+      if (1 == status) {
+        // Message.success(message)
+      } else if (status == 110) {
+        Message.error(message)
+      }
+      return {
+        ...state,
+        ...action.payload
+      }
+    },
+    updateState(state, action) {
+      return {...state, ...action.payload}
+    }
+  }
+}

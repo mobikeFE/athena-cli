@@ -1,0 +1,35 @@
+import request from '../utils/request'
+import qs from 'qs'
+
+export async function query(data) {
+  return request('query{{serviceUpperName}}List', {
+    method: "post",
+    dataType: "payload",
+    data
+  })
+}
+
+export async function add(data) {
+  return request("add", {
+    method: "post",
+    dataType: "payload",
+    data
+  })
+}
+
+export async function edit(data) {
+  return request("edit", {
+    method: "post",
+    dataType: "payload",
+    data
+  })
+}
+
+export async function delete{{serviceUpperName}}(data) {
+  return request("delete{{serviceUpperName}}", {
+    method: "post",
+    dataType: "payload",
+    data
+  })
+}
+

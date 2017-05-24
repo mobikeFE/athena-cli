@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+'use strict';
+
+var program = require('commander');
+
+program
+  .option('--no-css', 'Don\'t generate css for component and routeComponent')
+  .parse(process.argv);
+
+console.log(require('../src/generate'))
+
+require('../src/generate')(program, {
+  cwd: process.cwd(),
+});

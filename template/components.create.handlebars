@@ -1,0 +1,144 @@
+import React, {
+	Component, PropTypes
+} from 'react';
+
+import {
+  Table,
+  Popconfirm,
+  Button
+} from 'antd';
+
+import {connect} from 'dva';
+
+import {hashHistory} from 'dva/router';
+
+import './{{componentName}}.less'
+
+const PAGE_LENGTH = 10
+
+const {{componentName}} = ({
+                      global: {
+                        lang
+                      },
+                      dispatch,
+                      {{fileName}},
+                      {{fileName}}: {
+                        loading,
+                        list,
+                        total,
+                        currentPage
+                      }
+                    }) => {
+  const columns = [{
+    title: '序号',
+    key: 'index',
+    render: (text, record, index) => (
+      <span>{(currentPage - 1) * PAGE_LENGTH + index + 1}</span>
+    ),
+  }, {
+    title: '优先级',
+    dataIndex: 'name',
+    key: 'name',
+    render: (text, record, index) => {
+      return (
+        <span>{text}</span>
+      )
+    },
+  }, {
+    title: '操作',
+    key: 'operation',
+    render: (text, record) => {
+      const confirm = () => {
+        dispatch({
+          type: '{{fileName}}/deletePayOrder',
+          payload: {
+            id: record.id
+          }
+        })
+      }
+
+      const toEdit = () => {
+        dispatch({
+          type: '{{fileName}}/updateState',
+          payload: {
+            editData: record
+          }
+        })
+        setTimeout(() => {
+          hashHistory.push(`/y/{{fileName}}/add?id=${record.id}`)
+        }, 0)
+      }
+
+      const cancel = () => {
+      }
+
+      const title = (
+        <div className="txt-center">
+          <p>是否删除这条记录？</p>
+        </div>
+      )
+      return (
+        <span>
+          {
+            <Popconfirm title={title} onConfirm={confirm} onCancel={cancel} okText="是" cancelText="否">
+              <Button size="small" type="primary">删除</Button>
+            </Popconfirm>
+          }
+          <Button type="primary" size="small" onClick={toEdit}>查看</Button>
+        </span>
+      )
+    },
+  }]
+
+  const onChange = (pageNumber) => {
+    console.log('page:', pageNumber)
+    // pageNumber,更新index
+    dispatch({
+      type: 'payorder/updateState',
+      payload: {
+        currentPage: pageNumber
+      }
+    })
+    // 根据pageNumber，请求每一页的数据
+    dispatch({
+      type: 'payorder/query',
+      payload: {
+        pageSize: PAGE_LENGTH,
+        pageNumber: pageNumber
+      }
+    })
+  }
+
+  const pagination = {
+    current: currentPage,
+    total: total,
+    pageSize: PAGE_LENGTH,
+    showQuickJumper: true,
+    onChange: onChange
+  }
+
+  return (
+    <div>
+      <Table
+        columns={columns}
+        dataSource={list}
+        loading={loading}
+        rowKey={record => record.id}
+        pagination={pagination}
+        size="small"
+      />
+    </div>
+  )
+}
+
+const mapStateToProps = ({
+  {{fileName}}, 
+  global
+}) => {
+  return {
+    {{fileName}}, 
+    global
+  }
+}
+
+export default connect(mapStateToProps)({{componentName}})

@@ -1,0 +1,54 @@
+import React, {
+  Component, 
+  PropTypes
+} from 'react';
+
+import {Link} from 'dva/router';
+import {connect} from 'dva';
+
+import {
+  Card,
+  Button,
+  Form,
+  message as Message
+} from 'antd'
+
+import './{{routeComponentName}}.less'
+
+import {{routeComponentName}} from '../../components/{{routeComponentName}}/{{routeComponentName}}'
+
+const {{routeComponentName}} = ({
+      dispatch,
+      payorder,
+      global: {
+        lang
+      }
+    }) => {
+
+  return (
+    <div className="code">
+      <Card title="列表">
+        <div>
+          <Button type="primary">
+            <Link to={"/y/{{originName}}/add"}>新建</Link>
+          </Button>
+        </div>
+        <div>
+          <{{routeComponentName}} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+const mapStateToProps = ({
+  {{originName}}, 
+  global
+}) => {
+  return {
+    {{originName}},
+    global
+  }
+}
+
+export default connect(mapStateToProps)(Form.create()({{routeComponentName}}))
