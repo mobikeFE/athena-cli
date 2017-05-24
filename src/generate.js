@@ -40,6 +40,7 @@ var exports = module.exports = function(program, { cwd }) {
           var componentCSSPath = path.join(`${base}/components`, fileDir, `${componentName}.less`);
 
           ast('all', {
+            fileName: fileName,
             namespace: name,
             sourcePath: cwd,
             serviceFilePath,
