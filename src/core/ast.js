@@ -8,12 +8,13 @@ var models = require('./models');
 var services = require('./services');
 var components = require('./components');
 var routeComponents = require('./routeComponents');
+var routeForm = require('./routeForm');
 
 var apiMap = {
   models,
   services,
   components,
-  routeComponents
+  routeForm
 };
 
 var exports = module.exports = function(type, payload) {
@@ -53,6 +54,12 @@ var exports = module.exports = function(type, payload) {
                 routeComponents.create(payload)
                 setTimeout(function() {
                     callback(null, 'routeComponents');
+                }, 100);
+            },
+            function(callback) {
+                routeForm.create(payload)
+                setTimeout(function() {
+                    callback(null, 'routeForm');
                 }, 100);
             }
           ],

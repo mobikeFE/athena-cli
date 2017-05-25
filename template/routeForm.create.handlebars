@@ -1,0 +1,153 @@
+import React, {Component} from 'react'
+import {Link, hashHistory} from 'dva/router'
+import {connect} from 'dva'
+import pathToRegexp from 'path-to-regexp'
+
+import {
+  Upload,
+  Icon,
+  Breadcrumb,
+  Card,
+  Button,
+  Col,
+  Form,
+  Radio,
+  Input,
+  Select,
+  message as Message
+} from 'antd'
+
+const FormItem = Form.Item
+const Option = Select.Option
+const RadioGroup = Radio.Group
+
+const {{routeComponentName}}Form = ({
+                      dispatch,
+                      form: {
+                        getFieldDecorator,
+                        validateFields,
+                        getFieldsValue
+                      },
+                      location,
+                      {{originName}},
+                      {{originName}}: {
+                        editData
+                      }
+                    }) => {
+
+  const {pathname} = location
+
+  const isEdit = pathToRegexp(`/y/{{originName}}/edit`).test(pathname)
+
+  const formItemLayout = {
+    labelCol: {span: 8},
+    wrapperCol: {span: 14}
+  }
+
+  const tailFormItemLayout = {
+    wrapperCol: {
+      span: 14,
+      offset: 10,
+    },
+    className: "mt-20"
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    
+    let payload = getFieldsValue()
+
+    let {
+      title,
+      name
+    } = payload
+
+    // 修改新建post参数不同
+    if (isEdit) {
+      payload['id'] = editData.id
+    }
+
+    if (!title.trim()) {
+      return Message.error("请输入支付标题再提交")
+    }
+
+    if (!name.trim()) {
+      return Message.error("请输入支付名称再提交")
+    }
+
+    validateFields((err, values) => {
+      if (!err) {
+        console.log(`${isEdit ? "edit" : "add"}`);
+        dispatch({
+          type: `{{originName}}/${isEdit ? "edit" : "add"}`,
+          payload: payload
+        })
+      } else {
+        console.log(err);
+      }
+    })
+  }
+
+  return (
+    <div className="coupon-create-container" style={{background: "#fff", padding: "20px"}}>
+      <Breadcrumb>
+        <Breadcrumb.Item><Link to={"/"}>主页</Link></Breadcrumb.Item>
+        <Breadcrumb.Item><Link to={"/y/{{originName}}/list"}>列表</Link></Breadcrumb.Item>
+        <Breadcrumb.Item>{ isEdit ? "编辑" : "新建" }</Breadcrumb.Item>
+      </Breadcrumb>
+      <Card className="mt-20">
+        <Col span={16}>
+          <Form onSubmit={onSubmit}>
+
+            <FormItem
+              {...formItemLayout}
+              label="标题"
+            >
+              {getFieldDecorator("title", {
+                initialValue: isEdit ? editData.title : "",
+                rules: [{
+                  required: true,
+                  message: "标题必填"
+                }]
+              })(
+                <Input size="small"/>
+              )}
+            </FormItem>
+
+            <FormItem
+              {...formItemLayout}
+              label="名称"
+            >
+              {getFieldDecorator("name", {
+                initialValue: isEdit ? editData.name : "",
+                rules: [{
+                  required: true,
+                  message: "名称必填"
+                }]
+              })(
+                <Input size="small"/>
+              )}
+            </FormItem>
+            
+            <FormItem {...tailFormItemLayout} >
+              <Button type="primary" htmlType="submit">{ isEdit ? "完成" : "添加" }</Button>
+              <Button type="primary" style={{marginLeft: "20px"}}>
+                <Link to={"/y/{{originName}}/list"}>返回</Link>
+              </Button>
+            </FormItem>
+          </Form>
+        </Col>
+      </Card>
+    </div>
+  )
+}
+
+const mapStateToProps = ({
+  {{originName}}
+}) => {
+  return {
+    {{originName}}
+  }
+}
+
+export default connect(mapStateToProps)(Form.create()({{routeComponentName}}Form))

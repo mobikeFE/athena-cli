@@ -34,6 +34,9 @@ var exports = module.exports = function(program, { cwd }) {
           var routeComponentPath = `${base}/routes/${routeComponentName}/${routeComponentName}.jsx`;
           var routeComponentCSSPath = `${base}/routes/${routeComponentName}/${routeComponentName}.less`;
 
+          // routeForm
+          var routeFormPath = `${base}/routes/${routeComponentName}/${routeComponentName}Form.jsx`;
+
           // component
           var componentName = upperCamelCase(name);
           var componentFilePath = path.join(`${base}/components`, fileDir, componentName, `${componentName}.jsx`);
@@ -49,6 +52,7 @@ var exports = module.exports = function(program, { cwd }) {
             modelUpperName,
             originName: name,
             routeFilePath: routeComponentPath,
+            routeFormPath: routeFormPath,
             routeComponentName,
             componentName,
             componentFilePath,
