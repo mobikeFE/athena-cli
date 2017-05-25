@@ -94,14 +94,14 @@ const {{componentName}} = ({
     console.log('page:', pageNumber)
     // pageNumber,更新index
     dispatch({
-      type: 'payorder/updateState',
+      type: '{{fileName}}/updateState',
       payload: {
         currentPage: pageNumber
       }
     })
     // 根据pageNumber，请求每一页的数据
     dispatch({
-      type: 'payorder/query',
+      type: '{{fileName}}/query',
       payload: {
         pageSize: PAGE_LENGTH,
         pageNumber: pageNumber
